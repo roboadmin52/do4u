@@ -1,0 +1,16 @@
+name: do4u
+packages:
+  - apps/*
+  - packages/*
+
+scripts:
+  test:all:
+    run: melos run test --no-select
+    description: Run all tests in the project.
+
+  test:
+    run: flutter test
+    exec:
+      concurrency: 1
+    packageFilters:
+      dirExists: test
