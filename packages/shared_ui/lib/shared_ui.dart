@@ -1,5 +1,4 @@
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+library shared_ui;
+
+export 'src/widgets/status_chip.dart';
+export 'src/widgets/price_row.dart';

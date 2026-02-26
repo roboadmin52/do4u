@@ -143,6 +143,14 @@ class Errand {
   }
 
   static String _toSnakeCase(String name) {
+    // Specifically handle known camelCase to snake_case mappings
+    if (name == 'pickupDropoff') return 'pickup_dropoff';
+    if (name == 'pendingPayment') return 'pending_payment';
+    if (name == 'runnerEnRoute') return 'runner_en_route';
+    if (name == 'runnerArrived') return 'runner_arrived';
+    if (name == 'inProgress') return 'in_progress';
+    if (name == 'issueReported') return 'issue_reported';
+
     return name.replaceAllMapped(RegExp(r'([A-Z])'), (match) => '_${match.group(1)!.toLowerCase()}');
   }
 }

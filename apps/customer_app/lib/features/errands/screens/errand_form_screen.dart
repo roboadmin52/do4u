@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:models/models.dart';
 import 'package:customer_app/features/errands/bloc/errand_creation_bloc.dart';
 import 'package:customer_app/features/errands/bloc/errand_creation_event.dart';
@@ -22,18 +23,13 @@ class _ErrandFormScreenState extends State<ErrandFormScreen> {
   final _descriptionController = TextEditingController();
   final _subTypeController = TextEditingController();
 
-  // Car details
   final _carMakeController = TextEditingController();
   final _carModelController = TextEditingController();
   final _carPlateController = TextEditingController();
 
-  // Government details
   String? _selectedDocType;
   bool _returnToHome = false;
-
-  // Shopping details
   List<ShoppingItem> _shoppingItems = [];
-
   bool _isExpress = false;
 
   Map<String, dynamic>? _pickupAddress = {'lat': 30.0444, 'lng': 31.2357, 'label': 'Tahrir Square, Cairo'};
@@ -41,8 +37,10 @@ class _ErrandFormScreenState extends State<ErrandFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Errand Details')),
+      appBar: AppBar(title: Text(l10n.errandDetails)),
       body: BlocBuilder<ErrandCreationBloc, ErrandCreationState>(
         builder: (context, state) {
           return Padding(
@@ -54,21 +52,15 @@ class _ErrandFormScreenState extends State<ErrandFormScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Category: ${state.category.toString().split('.').last.toUpperCase()}',
+                      '${l10n.selectCategory}: ${state.category.toString().split('.').last.toUpperCase()}',
                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
                     ),
                     const SizedBox(height: 20),
 
-                    // Address Selection
                     AddressPicker(
                       label: 'PICKUP FROM',
                       address: _pickupAddress,
-                      onTap: () {
-                        // In a real app, open Google Maps picker
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Google Maps Picker would open here')),
-                        );
-                      },
+                      onTap: () {},
                     ),
                     const SizedBox(height: 12),
                     if (state.category == ErrandCategory.pickupDropoff || _returnToHome)
@@ -84,7 +76,6 @@ class _ErrandFormScreenState extends State<ErrandFormScreen> {
 
                     const Divider(height: 32),
 
-                    // Category Specific Widgets
                     if (state.category == ErrandCategory.shopping)
                       ShoppingListBuilder(
                         onChanged: (items) => _shoppingItems = items,
@@ -108,10 +99,9 @@ class _ErrandFormScreenState extends State<ErrandFormScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _subTypeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Service Sub-type',
-                        hintText: 'e.g. Pharmacy, Notary, Car Wash',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.subType,
+                        border: const OutlineInputBorder(),
                       ),
                       validator: (value) => value!.isEmpty ? 'Required' : null,
                     ),
@@ -119,18 +109,16 @@ class _ErrandFormScreenState extends State<ErrandFormScreen> {
                     TextFormField(
                       controller: _descriptionController,
                       maxLines: 3,
-                      decoration: const InputDecoration(
-                        labelText: 'Tell us more...',
-                        hintText: 'Specific instructions, items, etc.',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.instructions,
+                        border: const OutlineInputBorder(),
                       ),
-                      validator: (value) => value!.length < 10 ? 'Please provide more details' : null,
+                      validator: (value) => value!.length < 10 ? 'Too short' : null,
                     ),
 
                     const SizedBox(height: 16),
                     SwitchListTile(
-                      title: const Text('Express Service (+40%)'),
-                      subtitle: const Text('Faster response and execution'),
+                      title: Text(l10n.expressService),
                       value: _isExpress,
                       onChanged: (val) => setState(() => _isExpress = val),
                       contentPadding: EdgeInsets.zero,
@@ -145,7 +133,7 @@ class _ErrandFormScreenState extends State<ErrandFormScreen> {
                           foregroundColor: Colors.white,
                         ),
                         onPressed: () => _submit(state.category!),
-                        child: const Text('Review Price & Book', style: TextStyle(fontSize: 18)),
+                        child: Text(l10n.reviewPrice, style: const TextStyle(fontSize: 18)),
                       ),
                     ),
                   ],
