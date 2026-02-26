@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'features/auth/bloc/auth_bloc.dart';
-import 'features/auth/repository/auth_repository.dart';
-import 'features/auth/screens/phone_input_screen.dart';
-import 'features/errands/bloc/errand_creation_bloc.dart';
-import 'features/errands/repository/errand_repository.dart';
-import 'features/home/home_screen.dart';
+import 'package:customer_app/features/auth/bloc/auth_bloc.dart';
+import 'package:customer_app/features/auth/repository/auth_repository.dart';
+import 'package:customer_app/features/auth/screens/phone_input_screen.dart';
+import 'package:customer_app/features/errands/bloc/errand_creation_bloc.dart';
+import 'package:customer_app/features/errands/repository/errand_repository.dart';
+import 'package:customer_app/features/home/home_screen.dart';
+import 'package:customer_app/features/auth/bloc/auth_state.dart';
 
 void main() {
   runApp(const MyApp());

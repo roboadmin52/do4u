@@ -22,6 +22,26 @@ enum ErrandStatus {
   issueReported,
 }
 
+class ShoppingItem {
+  final String name;
+  final int quantity;
+  final bool isPurchased;
+
+  ShoppingItem({required this.name, this.quantity = 1, this.isPurchased = false});
+
+  factory ShoppingItem.fromJson(Map<String, dynamic> json) => ShoppingItem(
+        name: json['name'],
+        quantity: json['quantity'] ?? 1,
+        isPurchased: json['is_purchased'] ?? false,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'quantity': quantity,
+        'is_purchased': isPurchased,
+      };
+}
+
 class Errand {
   final String id;
   final int errandNumber;
@@ -39,6 +59,7 @@ class Errand {
   final bool isExpress;
   final String paymentMethod;
   final String paymentStatus;
+  final Map<String, dynamic>? categoryDetails;
 
   Errand({
     required this.id,
@@ -57,6 +78,7 @@ class Errand {
     this.isExpress = false,
     required this.paymentMethod,
     required this.paymentStatus,
+    this.categoryDetails,
   });
 
   factory Errand.fromJson(Map<String, dynamic> json) {
@@ -65,18 +87,36 @@ class Errand {
       errandNumber: json['errand_number'],
       customerId: json['customer_id'],
       runnerId: json['runner_id'],
-      category: ErrandCategory.values.firstWhere((e) => e.toString().split('.').last == json['category']),
+      category: _parseCategory(json['category']),
       subType: json['sub_type'],
-      status: ErrandStatus.values.firstWhere((e) => e.toString().split('.').last == json['status']),
-      description: json['description'],
+      status: _parseStatus(json['status']),
+      description: json['description'] ?? '',
       pickupAddress: json['pickup_address'],
       dropoffAddress: json['dropoff_address'],
       baseFee: (json['base_fee'] ?? 0.0).toDouble(),
       itemCost: (json['item_cost'] ?? 0.0).toDouble(),
       totalPrice: (json['total_price'] ?? 0.0).toDouble(),
       isExpress: json['is_express'] ?? false,
-      paymentMethod: json['payment_method'],
-      paymentStatus: json['payment_status'],
+      paymentMethod: json['payment_method'] ?? 'cash',
+      paymentStatus: json['payment_status'] ?? 'pending',
+      categoryDetails: json['category_details'],
+    );
+  }
+
+  static ErrandCategory _parseCategory(String value) {
+    // Map snake_case or whatever to Enum
+    final normalized = value.toLowerCase().replaceAll('_', '');
+    return ErrandCategory.values.firstWhere(
+      (e) => e.toString().split('.').last.toLowerCase().replaceAll('_', '') == normalized,
+      orElse: () => ErrandCategory.custom,
+    );
+  }
+
+  static ErrandStatus _parseStatus(String value) {
+    final normalized = value.toLowerCase().replaceAll('_', '');
+    return ErrandStatus.values.firstWhere(
+      (e) => e.toString().split('.').last.toLowerCase().replaceAll('_', '') == normalized,
+      orElse: () => ErrandStatus.draft,
     );
   }
 
@@ -86,9 +126,9 @@ class Errand {
       'errand_number': errandNumber,
       'customer_id': customerId,
       'runner_id': runnerId,
-      'category': category.toString().split('.').last,
+      'category': _toSnakeCase(category.toString().split('.').last),
       'sub_type': subType,
-      'status': status.toString().split('.').last,
+      'status': _toSnakeCase(status.toString().split('.').last),
       'description': description,
       'pickup_address': pickupAddress,
       'dropoff_address': dropoffAddress,
@@ -98,6 +138,11 @@ class Errand {
       'is_express': isExpress,
       'payment_method': paymentMethod,
       'payment_status': paymentStatus,
+      'category_details': categoryDetails,
     };
+  }
+
+  static String _toSnakeCase(String name) {
+    return name.replaceAllMapped(RegExp(r'([A-Z])'), (match) => '_${match.group(1)!.toLowerCase()}');
   }
 }

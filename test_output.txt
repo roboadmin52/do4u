@@ -1,8 +1,0 @@
-Running Pricing Engine Tests...
-Test 1 Passed: Base shopping price
-Test 2 Passed: Pickup distance surcharge
-Test 3 Passed: Express fee
-Test 4 Passed: Peak fee
-Test 5 Passed: Membership discount
-Test 6 Passed: Combined calculation
-All Pricing Engine Tests Passed!

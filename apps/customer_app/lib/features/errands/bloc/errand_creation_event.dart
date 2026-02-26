@@ -13,6 +13,7 @@ class ErrandDetailsUpdated extends ErrandCreationEvent {
   final Map<String, dynamic> pickupAddress;
   final Map<String, dynamic>? dropoffAddress;
   final bool isExpress;
+  final Map<String, dynamic>? categoryDetails;
 
   ErrandDetailsUpdated({
     required this.subType,
@@ -20,6 +21,7 @@ class ErrandDetailsUpdated extends ErrandCreationEvent {
     required this.pickupAddress,
     this.dropoffAddress,
     this.isExpress = false,
+    this.categoryDetails,
   });
 }
 

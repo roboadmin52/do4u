@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pricingService = require('../services/pricing.service');
+const Errand = require('../models/errand');
 const Joi = require('joi');
 
 const estimateSchema = Joi.object({
@@ -9,6 +10,7 @@ const estimateSchema = Joi.object({
   pickup_address: Joi.object().required(),
   dropoff_address: Joi.object().optional(),
   is_express: Joi.boolean().default(false),
+  category_details: Joi.object().optional(),
 });
 
 const createErrandSchema = Joi.object({
@@ -19,6 +21,7 @@ const createErrandSchema = Joi.object({
   dropoff_address: Joi.object().optional(),
   is_express: Joi.boolean().default(false),
   payment_method: Joi.string().required(),
+  category_details: Joi.object().optional(),
 });
 
 router.post('/pricing/estimate', async (req, res) => {
@@ -29,7 +32,6 @@ router.post('/pricing/estimate', async (req, res) => {
     const estimate = pricingService.calculatePrice({
       category: req.body.category,
       isExpress: req.body.is_express,
-      // distance calculation omitted for simplicity in MVP
     });
 
     res.json(estimate);
@@ -48,18 +50,17 @@ router.post('/errands', async (req, res) => {
       isExpress: req.body.is_express,
     });
 
-    const errand = {
-      id: 'mock-uuid-' + Date.now(),
-      errand_number: Math.floor(Math.random() * 10000),
-      customer_id: 'mock-customer-id', // Would come from JWT
+    // Mocking customer_id from a supposed auth middleware
+    const USER_ID_MOCK = '00000000-0000-0000-0000-000000000000';
+
+    const errand = await Errand.create({
+      customer_id: USER_ID_MOCK,
       ...req.body,
       base_fee: estimate.baseFee,
       total_price: estimate.total,
       status: 'pending_payment',
       payment_status: 'pending',
-    };
-
-    // In a real app, save to DB: await Errand.create(errand);
+    });
 
     res.status(201).json(errand);
   } catch (err) {
@@ -68,8 +69,24 @@ router.post('/errands', async (req, res) => {
 });
 
 router.get('/errands', async (req, res) => {
-  // Mocking list of errands
-  res.json([]);
+  try {
+    const errands = await Errand.findAll({
+      order: [['created_at', 'DESC']]
+    });
+    res.json(errands);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get('/errands/:id', async (req, res) => {
+  try {
+    const errand = await Errand.findByPk(req.params.id);
+    if (!errand) return res.status(404).json({ message: 'Errand not found' });
+    res.json(errand);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 module.exports = router;

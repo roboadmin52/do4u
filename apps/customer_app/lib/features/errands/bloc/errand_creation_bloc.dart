@@ -34,6 +34,7 @@ class ErrandCreationBloc extends Bloc<ErrandCreationEvent, ErrandCreationState> 
       pickupAddress: event.pickupAddress,
       dropoffAddress: event.dropoffAddress,
       isExpress: event.isExpress,
+      categoryDetails: event.categoryDetails,
     ));
   }
 
@@ -70,6 +71,7 @@ class ErrandCreationBloc extends Bloc<ErrandCreationEvent, ErrandCreationState> 
         'dropoff_address': state.dropoffAddress,
         'is_express': state.isExpress,
         'payment_method': event.paymentMethod,
+        'category_details': state.categoryDetails,
       };
       final errand = await _repository.createErrand(errandData);
       emit(state.copyWith(status: ErrandCreationStatus.success, createdErrand: errand));

@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/errand_creation_bloc.dart';
-import '../bloc/errand_creation_event.dart';
-import '../bloc/errand_creation_state.dart';
+import 'package:customer_app/features/errands/bloc/errand_creation_bloc.dart';
+import 'package:customer_app/features/errands/bloc/errand_creation_event.dart';
+import 'package:customer_app/features/errands/bloc/errand_creation_state.dart';
+import 'package:customer_app/features/errands/widgets/payment_method_selector.dart';
 
-class PriceEstimateScreen extends StatelessWidget {
+class PriceEstimateScreen extends StatefulWidget {
   const PriceEstimateScreen({super.key});
+
+  @override
+  State<PriceEstimateScreen> createState() => _PriceEstimateScreenState();
+}
+
+class _PriceEstimateScreenState extends State<PriceEstimateScreen> {
+  String _selectedPaymentMethod = 'cash';
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +26,10 @@ class PriceEstimateScreen extends StatelessWidget {
               const SnackBar(content: Text('Errand Booked Successfully!')),
             );
             Navigator.of(context).popUntil((route) => route.isFirst);
+          } else if (state.status == ErrandCreationStatus.error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.errorMessage ?? 'Error booking errand')),
+            );
           }
         },
         builder: (context, state) {
@@ -34,8 +46,10 @@ class PriceEstimateScreen extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Card(
+                  elevation: 2,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -45,25 +59,38 @@ class PriceEstimateScreen extends StatelessWidget {
                         if (estimate['expressFee'] > 0) _buildPriceRow('Express Surcharge', estimate['expressFee']),
                         if (estimate['distanceSurcharge'] > 0)
                           _buildPriceRow('Distance Surcharge', estimate['distanceSurcharge']),
-                        const Divider(),
+                        const Divider(height: 24),
                         _buildPriceRow('Total', estimate['total'], isBold: true),
                       ],
                     ),
                   ),
                 ),
+                const SizedBox(height: 24),
+                PaymentMethodSelector(
+                  selectedMethod: _selectedPaymentMethod,
+                  onChanged: (val) {
+                    if (val != null) setState(() => _selectedPaymentMethod = val);
+                  },
+                ),
                 const Spacer(),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.teal, foregroundColor: Colors.white),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
                     onPressed: state.status == ErrandCreationStatus.submitting
                         ? null
                         : () {
-                            context.read<ErrandCreationBloc>().add(ErrandSubmitRequested('cash'));
+                            context.read<ErrandCreationBloc>().add(
+                                  ErrandSubmitRequested(_selectedPaymentMethod),
+                                );
                           },
                     child: state.status == ErrandCreationStatus.submitting
-                        ? const CircularProgressIndicator()
-                        : const Text('Confirm & Book Errand'),
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text('Confirm & Book Errand', style: TextStyle(fontSize: 18)),
                   ),
                 ),
               ],
@@ -80,8 +107,14 @@ class PriceEstimateScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
-          Text('${value} EGP', style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
+          Text(label, style: TextStyle(
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            fontSize: isBold ? 18 : 14,
+          )),
+          Text('${value} EGP', style: TextStyle(
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            fontSize: isBold ? 18 : 14,
+          )),
         ],
       ),
     );
