@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:models/models.dart';
 import 'package:customer_app/features/errands/bloc/errand_creation_bloc.dart';
 import 'package:customer_app/features/errands/bloc/errand_creation_event.dart';
@@ -9,7 +10,6 @@ import 'package:customer_app/features/errands/widgets/shopping_list_builder.dart
 import 'package:customer_app/features/errands/widgets/government_form_details.dart';
 import 'package:customer_app/features/errands/widgets/car_form_details.dart';
 import 'package:customer_app/features/errands/widgets/address_picker.dart';
-import 'price_estimate_screen.dart';
 
 class ErrandFormScreen extends StatefulWidget {
   const ErrandFormScreen({super.key});
@@ -173,10 +173,7 @@ class _ErrandFormScreenState extends State<ErrandFormScreen> {
           );
 
       context.read<ErrandCreationBloc>().add(ErrandEstimateRequested());
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const PriceEstimateScreen()),
-      );
+      context.push('/create-errand/estimate');
     }
   }
 }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:models/models.dart';
 import 'package:customer_app/features/errands/bloc/errand_creation_bloc.dart';
 import 'package:customer_app/features/errands/bloc/errand_creation_event.dart';
-import 'package:customer_app/features/errands/screens/errand_form_screen.dart';
 
 class CategorySelectionScreen extends StatelessWidget {
   const CategorySelectionScreen({super.key});
@@ -41,10 +41,7 @@ class CategorySelectionScreen extends StatelessWidget {
                 context.read<ErrandCreationBloc>().add(
                       ErrandCategorySelected(cat['value'] as ErrandCategory),
                     );
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ErrandFormScreen()),
-                );
+                context.push('/create-errand/form');
               },
               child: Card(
                 elevation: 4,

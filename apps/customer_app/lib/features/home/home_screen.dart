@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:customer_app/features/errands/screens/category_selection_screen.dart';
-import 'package:customer_app/features/payment/screens/wallet_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:customer_app/features/errands/screens/errands_history_tab.dart';
 import 'package:customer_app/features/membership/screens/membership_overview_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final List<Widget> _tabs = [
       const HomeTab(),
-      const Center(child: Text('Errands History')),
+      const ErrandsHistoryTab(),
       const MembershipOverviewScreen(),
       const Center(child: Text('Profile')),
     ];
@@ -56,7 +56,7 @@ class HomeTab extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.account_balance_wallet),
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const WalletScreen())),
+            onPressed: () => context.push('/wallet'),
           ),
         ],
       ),
@@ -68,12 +68,7 @@ class HomeTab extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16)),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const CategorySelectionScreen()),
-                );
-              },
+              onPressed: () => context.push('/create-errand'),
               child: Text(l10n.createNewErrand, style: const TextStyle(fontSize: 18)),
             ),
           ],
