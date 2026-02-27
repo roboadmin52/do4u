@@ -1,12 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../repository/errand_repository.dart';
+import 'package:customer_app/features/payment/bloc/payment_bloc.dart';
+import 'package:customer_app/features/payment/bloc/payment_event.dart';
 import 'errand_creation_event.dart';
 import 'errand_creation_state.dart';
 
 class ErrandCreationBloc extends Bloc<ErrandCreationEvent, ErrandCreationState> {
   final ErrandRepository _repository;
+  final PaymentBloc _paymentBloc;
 
-  ErrandCreationBloc(this._repository) : super(ErrandCreationState()) {
+  ErrandCreationBloc(this._repository, this._paymentBloc) : super(ErrandCreationState()) {
     on<ErrandCategorySelected>(_onCategorySelected);
     on<ErrandDetailsUpdated>(_onDetailsUpdated);
     on<ErrandEstimateRequested>(_onEstimateRequested);
@@ -74,6 +77,16 @@ class ErrandCreationBloc extends Bloc<ErrandCreationEvent, ErrandCreationState> 
         'category_details': state.categoryDetails,
       };
       final errand = await _repository.createErrand(errandData);
+
+      // If payment is card, initiate payment flow
+      if (event.paymentMethod == 'card') {
+        _paymentBloc.add(PaymentInitiated(
+          errandId: errand.id,
+          amount: errand.totalPrice,
+          method: 'card',
+        ));
+      }
+
       emit(state.copyWith(status: ErrandCreationStatus.success, createdErrand: errand));
     } catch (e) {
       emit(state.copyWith(status: ErrandCreationStatus.error, errorMessage: e.toString()));

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:models/models.dart';
 
 class PaymentRepository {
   final Dio _dio = Dio(BaseOptions(baseUrl: 'https://api.do4u.app/v1'));
@@ -19,5 +20,10 @@ class PaymentRepository {
       'amount': amount,
     });
     return response.data;
+  }
+
+  Future<List<WalletTransaction>> getTransactionHistory() async {
+    final response = await _dio.get('/payments/me/transactions');
+    return (response.data as List).map((e) => WalletTransaction.fromJson(e)).toList();
   }
 }

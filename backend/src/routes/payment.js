@@ -34,4 +34,22 @@ router.post('/initiate', async (req, res) => {
   }
 });
 
+router.post('/webhook', async (req, res) => {
+  try {
+    await paymentService.handlePayMobWebhook(req.body);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get('/me/transactions', async (req, res) => {
+  try {
+    const history = await paymentService.getTransactionHistory(MOCK_USER_ID);
+    res.json(history);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;

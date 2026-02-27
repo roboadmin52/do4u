@@ -80,6 +80,30 @@ class PaymentService {
       payment_id: payment.id
     };
   }
+
+  async handlePayMobWebhook(payload) {
+    const { order_id, success, transaction_id } = payload;
+    const payment = await Payment.findOne({ where: { paymob_order_id: order_id } });
+    if (!payment) return;
+
+    if (success) {
+      await payment.update({ status: 'success', paymob_transaction_id: transaction_id });
+      // If it was for an errand, we might update errand status here too via a hook or separate call
+    } else {
+      await payment.update({ status: 'failed' });
+    }
+  }
+
+  async getTransactionHistory(userId) {
+    return await WalletTransaction.findAll({
+      where: { user_id: userId },
+      order: [['created_at', 'DESC']]
+    });
+  }
+
+  async refundToWallet(userId, amount, description) {
+    return await this.topUpWallet(userId, amount); // Reusing topUp logic for refund
+  }
 }
 
 module.exports = new PaymentService();

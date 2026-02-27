@@ -9,6 +9,7 @@ import 'package:customer_app/features/errands/bloc/errand_creation_bloc.dart';
 import 'package:customer_app/features/errands/repository/errand_repository.dart';
 import 'package:customer_app/features/payment/repository/payment_repository.dart';
 import 'package:customer_app/features/membership/repository/membership_repository.dart';
+import 'package:customer_app/features/membership/bloc/membership_bloc.dart';
 import 'package:customer_app/features/home/home_screen.dart';
 import 'package:customer_app/features/auth/bloc/auth_state.dart';
 
@@ -31,7 +32,14 @@ class MyApp extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => AuthBloc(context.read<AuthRepository>())),
-          BlocProvider(create: (context) => ErrandCreationBloc(context.read<ErrandRepository>())),
+          BlocProvider(create: (context) => PaymentBloc(context.read<PaymentRepository>())),
+          BlocProvider(create: (context) => MembershipBloc(context.read<MembershipRepository>())),
+          BlocProvider(
+            create: (context) => ErrandCreationBloc(
+              context.read<ErrandRepository>(),
+              context.read<PaymentBloc>(),
+            ),
+          ),
         ],
         child: MaterialApp(
           title: 'Do4U',

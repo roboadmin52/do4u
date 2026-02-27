@@ -5,6 +5,9 @@ import 'package:customer_app/features/errands/bloc/errand_creation_bloc.dart';
 import 'package:customer_app/features/errands/bloc/errand_creation_event.dart';
 import 'package:customer_app/features/errands/bloc/errand_creation_state.dart';
 import 'package:customer_app/features/errands/widgets/payment_method_selector.dart';
+import 'package:customer_app/features/payment/bloc/payment_bloc.dart';
+import 'package:customer_app/features/payment/bloc/payment_event.dart';
+import 'package:customer_app/features/payment/bloc/payment_state.dart' as p;
 import 'package:shared_ui/shared_ui.dart';
 
 class PriceEstimateScreen extends StatefulWidget {
@@ -73,24 +76,34 @@ class _PriceEstimateScreenState extends State<PriceEstimateScreen> {
                   },
                 ),
                 const Spacer(),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                BlocListener<PaymentBloc, p.PaymentState>(
+                  listener: (context, pState) {
+                    if (pState.checkoutUrl != null) {
+                      // In real app, launch WebView or url_launcher
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Redirecting to: ${pState.checkoutUrl}')),
+                      );
+                    }
+                  },
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      onPressed: state.status == ErrandCreationStatus.submitting
+                          ? null
+                          : () {
+                              context.read<ErrandCreationBloc>().add(
+                                    ErrandSubmitRequested(_selectedPaymentMethod),
+                                  );
+                            },
+                      child: state.status == ErrandCreationStatus.submitting
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : Text(l10n.confirmBook, style: const TextStyle(fontSize: 18)),
                     ),
-                    onPressed: state.status == ErrandCreationStatus.submitting
-                        ? null
-                        : () {
-                            context.read<ErrandCreationBloc>().add(
-                                  ErrandSubmitRequested(_selectedPaymentMethod),
-                                );
-                          },
-                    child: state.status == ErrandCreationStatus.submitting
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : Text(l10n.confirmBook, style: const TextStyle(fontSize: 18)),
                   ),
                 ),
               ],
