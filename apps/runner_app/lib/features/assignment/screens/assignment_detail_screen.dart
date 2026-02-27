@@ -4,6 +4,8 @@ import 'package:models/models.dart';
 import 'package:shared_ui/shared_ui.dart';
 import '../bloc/assignment_bloc.dart';
 import '../bloc/assignment_event.dart';
+import 'photo_upload_screen.dart';
+import 'car_inspection_screen.dart';
 
 class AssignmentDetailScreen extends StatelessWidget {
   final Errand errand;
@@ -35,6 +37,52 @@ class AssignmentDetailScreen extends StatelessWidget {
             const SizedBox(height: 32),
 
             _buildActionButton(context),
+            const SizedBox(height: 16),
+            if (errand.category == ErrandCategory.shopping)
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.receipt_long),
+                  label: const Text('Add Receipt & Item Cost'),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PhotoUploadScreen(
+                          title: 'Upload Receipt',
+                          onUpload: (url) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Receipt uploaded successfully')),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            if (errand.category == ErrandCategory.car && errand.status == ErrandStatus.runnerArrived)
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.directions_car),
+                  label: const Text('Start Car Inspection'),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CarInspectionScreen(
+                          onComplete: (photos) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Car inspection completed')),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
           ],
         ),
       ),

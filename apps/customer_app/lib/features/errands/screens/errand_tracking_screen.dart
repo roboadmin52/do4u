@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:models/models.dart';
 import 'package:shared_ui/shared_ui.dart';
 import '../widgets/runner_map.dart';
+import '../widgets/chat_overlay.dart';
 
 class ErrandTrackingScreen extends StatelessWidget {
   final Errand errand;
@@ -52,6 +53,20 @@ class ErrandTrackingScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => Padding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: ChatOverlay(errandId: errand.id),
+            ),
+          );
+        },
+        backgroundColor: Colors.teal,
+        child: const Icon(Icons.chat),
       ),
     );
   }

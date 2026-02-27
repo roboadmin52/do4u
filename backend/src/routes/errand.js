@@ -89,4 +89,33 @@ router.get('/errands/:id', async (req, res) => {
   }
 });
 
+router.get('/errands/:id/chat', async (req, res) => {
+  // Mock chat history
+  res.json([]);
+});
+
+router.post('/errands/:id/chat', async (req, res) => {
+  const { text } = req.body;
+  const message = {
+    id: Date.now().toString(),
+    errand_id: req.params.id,
+    sender_id: 'mock-user-id',
+    text,
+    created_at: new Date().toISOString()
+  };
+  res.status(201).json(message);
+});
+
+router.post('/errands/:id/attachments', async (req, res) => {
+  const { attachment_type, file_url } = req.body;
+  // Mock saving attachment
+  res.status(201).json({
+    id: Date.now().toString(),
+    errand_id: req.params.id,
+    attachment_type,
+    file_url,
+    uploaded_at: new Date().toISOString()
+  });
+});
+
 module.exports = router;
