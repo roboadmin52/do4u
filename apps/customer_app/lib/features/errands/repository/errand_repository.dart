@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:models/models.dart';
 
 class ErrandRepository {
-  final Dio _dio = Dio(BaseOptions(baseUrl: 'https://api.do4u.app/v1'));
+  final Dio _dio = Dio(BaseOptions(baseUrl: AppConfig.apiBaseUrl));
 
   Future<Map<String, dynamic>> getPriceEstimate({
     required ErrandCategory category,

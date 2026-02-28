@@ -3,7 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:models/models.dart';
 
 class AuthRepository {
-  final Dio _dio = Dio(BaseOptions(baseUrl: 'https://api.do4u.app/v1'));
+  final Dio _dio = Dio(BaseOptions(baseUrl: AppConfig.apiBaseUrl));
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   Future<void> sendOtp(String phone) async {

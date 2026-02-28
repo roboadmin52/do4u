@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:models/models.dart';
 
 class AssignmentRepository {
-  final Dio _dio = Dio(BaseOptions(baseUrl: 'https://api.do4u.app/v1'));
+  final Dio _dio = Dio(BaseOptions(baseUrl: AppConfig.apiBaseUrl));
 
   Future<RunnerProfile> toggleAvailability(bool isAvailable) async {
     final response = await _dio.patch('/runner/availability', data: {'is_available': isAvailable});
