@@ -2,8 +2,29 @@ name: do4u
 packages:
   - apps/*
   - packages/*
+  - backend
 
 scripts:
+  bootstrap:
+    run: melos exec -- "npm install || flutter pub get"
+    description: Install all dependencies across the monorepo.
+
+  run:backend:
+    run: cd backend && npm run dev
+    description: Run the backend in development mode.
+
+  run:customer:
+    run: cd apps/customer_app && flutter run
+    description: Run the customer app.
+
+  run:runner:
+    run: cd apps/runner_app && flutter run
+    description: Run the runner app.
+
+  run:admin:
+    run: cd apps/admin_dashboard && npm run dev
+    description: Run the admin dashboard.
+
   test:all:
     run: melos run test --no-select
     description: Run all tests in the project.
